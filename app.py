@@ -9,24 +9,20 @@ GOOGLE_URL = "https://script.google.com/macros/s/AKfycbyxlsF4wXk1OXDcY6tQNQMRDUX
 @app.route("/relay", methods=["POST"])
 def relay():
     try:
-        # Read raw JSON payload from SIM900
-        payload = request.data.decode("utf-8")  # decode bytes to string
+        payload = request.data
 
-        # Log the payload to Render console
-        print(f"[SIM900 Payload Received]: {payload}")
+        # LOG incoming JSON to Render logs
+        print("=== Incoming payload ===")
+        print(payload.decode())
 
-        # Forward the payload to Google Apps Script
         headers = {'Content-Type': 'application/json'}
         response = requests.post(GOOGLE_URL, data=payload, headers=headers, timeout=10)
 
-        # Log Google Script response
-        print(f"[Google Script Response]: {response.text}")
-
-        # Return the Google Script response back to SIM900
         return response.text
     except Exception as e:
-        print(f"[Error]: {str(e)}")
+        print("Relay error:", str(e))
         return f"Error: {str(e)}", 500
+
 
 
 if __name__ == "__main__":
